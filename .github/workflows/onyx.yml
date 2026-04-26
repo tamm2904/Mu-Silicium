@@ -1,0 +1,27 @@
+name: Build UEFI for Redmi Turbo 4 Pro (onyx)
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "Platforms/Xiaomi/onyxPkg/**"
+      - "Silicon/Qualcomm/PalawanPkg/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build UEFI for onyx (SM8635)
+        run: |
+          bash ./setup_env.sh -p apt
+          bash ./build_uefi.sh -d onyx -r DEBUG -c -i -m 0
+
+      - name: Upload UEFI image
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mu-onyx
+          path: ./Mu-onyx*
+          compression-level: 9
+          if-no-files-found: warn
